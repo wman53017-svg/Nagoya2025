@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Japan Trip Itinerary - Nov 11-16</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .export-btn {
+            background-color: #e74c3c;
+            color: white;
+        }
+
+        .export-btn:hover {
+            background-color: #c0392b;
+        }
+
+        .add-image-btn {
+            background-color: #3498db;
+            color: white;
+        }
+
+        .add-image-btn:hover {
+            background-color: #2980b9;
+        }
+
+        .itinerary-wrapper {
+            overflow-x: auto;
+            margin-bottom: 30px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1200px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        th {
+            background-color: #34495e;
+            color: white;
+            font-weight: bold;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .time-col {
+            background-color: #ecf0f1;
+            font-weight: bold;
+            width: 80px;
+        }
+
+        .hotel-row {
+            background-color: #e8f4f8;
+            font-weight: bold;
+        }
+
+        .day-images {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+        }
+
+        .day-images h3 {
+            margin-bottom: 15px;
+            color: #2c3e50;
+        }
+
+        .images-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .image-container {
+            position: relative;
+            border-radius: 5px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .image-container img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            cursor: pointer;
+        }
+
+        .remove-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background-color: rgba(231, 76, 60, 0.9);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal img {
+            max-width: 90%;
+            max-height: 90%;
+            border-radius: 5px;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 40px;
+            color: white;
+            font-size: 40px;
+            cursor: pointer;
+        }
+
+        @media print {
+            .controls {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="pdf-content">
+        <h1>Japan Trip Itinerary</h1>
+        <p class="subtitle">November 11-16, 2024 | Hong Kong → Nagoya → Takayama → Nagoya</p>
+        
+        <div class="controls">
+            <input type="file" id="imageInput" accept="image/*" multiple class="hidden">
+            <select id="daySelector" class="btn">
+                <option value="">Select Day to Add Images</option>
+                <option value="day1">Day 1 - Nov 11</option>
+                <option value="day2">Day 2 - Nov 12</option>
+                <option value="day3">Day 3 - Nov 13</option>
+                <option value="day4">Day 4 - Nov 14</option>
+                <option value="day5">Day 5 - Nov 15</option>
+                <option value="day6">Day 6 - Nov 16</option>
+            </select>
+            <button class="btn add-image-btn" onclick="addImages()">📷 Add Images</button>
+            <button class="btn export-btn" onclick="exportToPDF()">📄 Export to PDF</button>
+        </div>
+
+        <div class="itinerary-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th class="time-col">Time</th>
+                        <th>Day1 11 Nov (Tues)<br/>HK→Nagoya</th>
+                        <th>Day2 12 Nov (Wed)<br/>名古屋 → 犬山</th>
+                        <th>Day3 13 Nov (Thu)</th>
+                        <th>Day4 14 Nov (Fri)</th>
+                        <th>Day5 15 Nov (Sat)</th>
+                        <th>Day6 16 Nov (Sun)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="hotel-row">
+                        <td class="time-col">Hotel</td>
+                        <td>Hotel Indigo Inuyama<br/>Urakuen Garden by IHG</td>
+                        <td>東急Stay飛彈高山 結之湯</td>
+                        <td>Motoyu Magokuro<br/>元湯 孫九郎</td>
+                        <td>Apartment Hotel 11<br/>Nagoya Sakae</td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td class="time-col">7:30</td>
+                        <td></td>
+                        <td></td>
+                        <td>宮川朝市</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td class="time-col">8:30</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td>850 Fukuji Onsen</td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td class="time-col">9:00</td>
+                        <td></td>
+                        <td>犬山城 & 犬山城下町<br/>(肉兵衛的飛驒牛壽司或<br/>山田五平餅店的五平餅)</td>
+                        <td>Hotel Check Out</td>
+                        <td></td>
+                        <td></td>
+                        <td>前往大須商店街。<br/>大須觀音站或上前津站皆可抵達。<br/>大須觀音寺和萬松寺，<br/>串八丁どて八丁等美食店鋪。<br/>矢場とん的味噌豬排。</td>
+                    </tr>
+                    <tr>
+                        <td class="time-col">9:30</td>
+                        <td></td>
+                        <td></td>
+                        <td>平湯温泉<br/>(Bus at 9:40)</td>
+                        <td>916 Ropeway</td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td class="time-col">10:00</td>
+                        <td>UO680: HK > NGO<br/>(10:00 - 14:30)</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td>Arrive Ghibli Park</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td class="time-col">11:00</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td>1155 ropeway > fukuji onsen</td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td class="time-col">11:30</td>
+                        <td></td>
+                        <td>高山本線: 鵜沼 > 美濃太田車站<br/>(40mins)</td>
+                        <td>Arrive 上高地</td>
+                        <td>1216 fukuji onsen guchi</td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td class="time-col">12:00</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td>1315 fukuji onsen guchi>takayama</td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td class="time-col">12:30</td>
+                        <td></td>
+                        <td>美濃太田 > 高山<br/>(12:25 - 14:14)<br/>bring red hsbc credit card;<br/>no. 3110</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td class="time-col">13:30</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td>1431 takayama</td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td class="time-col">14:00</td>
+                        <td></td>
+                        <td></td>
+                        <td>2:00/3:00 Bus to Hirayu Onsen</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td class="time-col">14:30</td>
+                        <td></td>
+                        <td>Check in Hotel</td>
+                        <td></td>
+                        <td>1446 takayama > nagoya</td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td class="time-col">15:00</td>
+                        <td></td>
+                        <td>三町筋</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td class="time-col">15:30</td>
+                        <td>名鐵特急: 中部國際機場 > 金山（愛知）<br/>名城線: 金山（愛知) > 矢場町駅</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td class="time-col">16:00</td>
+                        <td></td>
+                        <td></td>
+                        <td>Arrive Hotel</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td class="time-col">17:00</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td>1704 Nagoya Station</td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td class="time-col">18:30</td>
+                        <td></td>
+                        <td>旬亭なか川</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td class="time-col">19:00</td>
+                        <td>The Sushi Nagoya Kai Kai 1900</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td class="time-col">19:30</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td>Maison 8 restaurant 1930</td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Image sections for each day -->
+        <div id="day1" class="day-images hidden">
+            <h3>Day 1 - November 11 (HK → Nagoya)</h3>
+            <div class="images-grid"></div>
+        </div>
+        <div id="day2" class="day-images hidden">
+            <h3>Day 2 - November 12 (名古屋 → 犬山)</h3>
+            <div class="images-grid"></div>
+        </div>
+        <div id="day3" class="day-images hidden">
+            <h3>Day 3 - November 13</h3>
+            <div class="images-grid"></div>
+        </div>
+        <div id="day4" class="day-images hidden">
+            <h3>Day 4 - November 14</h3>
+            <div class="images-grid"></div>
+        </div>
+        <div id="day5" class="day-images hidden">
+            <h3>Day 5 - November 15</h3>
+            <div class="images-grid"></div>
+        </div>
+        <div id="day6" class="day-images hidden">
+            <h3>Day 6 - November 16</h3>
+            <div class="images-grid"></div>
+        </div>
+    </div>
+
+    <!-- Modal for full-size image view -->
+    <div id="imageModal" class="modal" onclick="closeModal()">
+        <span class="close-modal">&times;</span>
+        <img id="modalImage" src="" alt="">
+    </div>
+
+    <script>
+        let dayImages = {
+            day1: [],
+            day2: [],
+            day3: [],
+            day4: [],
+            day5: [],
+            day6: []
+        };
+
+        function addImages() {
+            const selectedDay = document.getElementById('daySelector').value;
+            if (!selectedDay) {
+                alert('Please select a day first!');
+                return;
+            }
+            document.getElementById('imageInput').click();
+        }
+
+        document.getElementById('imageInput').addEventListener('change', function(e) {
+            const selectedDay = document.getElementById('daySelector').value;
+            const files = Array.from(e.target.files);
+            
+            files.forEach(file => {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const imageId = Date.now() + Math.random();
+                    dayImages[selectedDay].push({
+                        id: imageId,
+                        src: event.target.result,
+                        name: file.name
+                    });
+                    displayImages(selectedDay);
+                };
+                reader.readAsDataURL(file);
+            });
+        });
+
+        function displayImages(day) {
+            const daySection = document.getElementById(day);
+            const imagesGrid = daySection.querySelector('.images-grid');
+            
+            if (dayImages[day].length > 0) {
+                daySection.classList.remove('hidden');
+                imagesGrid.innerHTML = '';
+                
+                dayImages[day].forEach(img => {
+                    const imageContainer = document.createElement('div');
+                    imageContainer.className = 'image-container';
+                    imageContainer.innerHTML = `
+                        <img src="${img.src}" alt="${img.name}" onclick="showModal('${img.src}')">
+                        <button class="remove-btn" onclick="removeImage('${day}', ${img.id})">&times;</button>
+                    `;
+                    imagesGrid.appendChild(imageContainer);
+                });
+            } else {
+                daySection.classList.add('hidden');
+            }
+        }
+
+        function removeImage(day, imageId) {
+            dayImages[day] = dayImages[day].filter(img => img.id !== imageId);
+            displayImages(day);
+        }
+
+        function showModal(imageSrc) {
+            const modal = document.getElementById('imageModal');
+            const modalImg = document.getElementById('modalImage');
+            modal.style.display = 'flex';
+            modalImg.src = imageSrc;
+        }
+
+        function closeModal() {
+            document.getElementById('imageModal').style.display = 'none';
+        }
+
+        async function exportToPDF() {
+            const element = document.getElementById('pdf-content');
+            const exportBtn = document.querySelector('.export-btn');
+            exportBtn.textContent = 'Generating PDF...';
+            exportBtn.disabled = true;
+
+            try {
+                // Hide controls for PDF
+                document.querySelector('.controls').style.display = 'none';
+                
+                const canvas = await html2canvas(element, {
+                    scale: 2,
+                    useCORS: true,
+                    logging: false
+                });
+                
+                const imgData = canvas.toDataURL('image/png');
+                const pdf = new jspdf.jsPDF('p', 'mm', 'a4');
+                
+                const pdfWidth = pdf.internal.pageSize.getWidth();
+                const pdfHeight = pdf.internal.pageSize.getHeight();
+                const imgWidth = canvas.width;
+                const imgHeight = canvas.height;
+                const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight) * 0.95;
+                const imgX = (pdfWidth - imgWidth * ratio) / 2;
+                const imgY = 10;
+                
+                pdf.addImage(imgData, 'PNG', imgX, imgY, imgWidth * ratio, imgHeight * ratio);
+                
+                // Add additional pages if content is too long
+                let heightLeft = imgHeight * ratio - (pdfHeight - 20);
+                let position = 0;
+                
+                while (heightLeft >= 0) {
+                    position = heightLeft - imgHeight * ratio;
+                    pdf.addPage();
+                    pdf.addImage(imgData, 'PNG', imgX, position, imgWidth * ratio, imgHeight * ratio);
+                    heightLeft -= pdfHeight;
+                }
+                
+                pdf.save('Japan_Trip_Itinerary_Nov2024.pdf');
+                
+                // Show controls again
+                document.querySelector('.controls').style.display = 'flex';
+            } catch (error) {
+                console.error('Error generating PDF:', error);
+                alert('Error generating PDF. Please try again.');
+            } finally {
+                exportBtn.textContent = '📄 Export to PDF';
+                exportBtn.disabled = false;
+            }
+        }
+    </script>
+</body>
+</html>
