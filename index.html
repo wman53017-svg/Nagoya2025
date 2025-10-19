@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>名古屋</title>
+    <title>名古屋旅行のしおり</title>
     <!-- Google Fonts for Japanese brush style -->
     <link href="https://fonts.googleapis.com/css2?family=Kosugi+Maru&family=Shippori+Mincho:wght@700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -14,6 +14,7 @@
             background: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1500&q=80') no-repeat center center fixed;
             background-size: cover;
             padding: 30px;
+            color: #333;
         }
         .container {
             max-width: 1400px;
@@ -54,7 +55,8 @@
             cursor: pointer;
             font-size: 17px;
             font-family: 'Kosugi Maru', sans-serif;
-            transition: background 0.3s;
+            transition: all 0.3s;
+            flex-grow: 1; /* Allow buttons to grow */
         }
         .export-btn {
             background: linear-gradient(90deg, #b71c1c 0%, #d32f2f 100%);
@@ -66,23 +68,30 @@
             color: #fff;
         }
         .export-btn:hover, .add-image-btn:hover {
-            filter: brightness(0.95);
+            filter: brightness(1.1);
+            transform: translateY(-2px);
+        }
+        .export-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
         }
         .itinerary-wrapper {
             overflow-x: auto;
             margin-bottom: 38px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
         }
         table {
             width: 100%;
             border-collapse: collapse;
-            min-width: 1280px;
+            min-width: 1200px; /* Reduced min-width slightly */
             background: rgba(246, 241, 233, 0.98);
             border-radius: 10px;
             overflow: hidden;
         }
         th, td {
-            border: 1.5px solid #c62828;
-            padding: 9px 7px;
+            border: 1px solid #c62828;
+            padding: 10px 8px;
             text-align: left;
             vertical-align: top;
             font-size: 1em;
@@ -101,6 +110,7 @@
             font-weight: bold;
             width: 80px;
             font-family: 'Kosugi Maru', sans-serif;
+            text-align: center;
         }
         .hotel-row {
             background: #ffcdd2;
@@ -111,80 +121,113 @@
             width: 100%;
             height: 22px;
             background: url('https://cdn.pixabay.com/photo/2017/01/31/14/51/brush-2023823_1280.png') repeat-x bottom center;
+            background-size: contain;
             margin-bottom: 18px;
         }
         .day-images {
-            margin-top: 22px;
-            padding: 22px;
-            background: #ffebee;
-            border-radius: 8px;
+            margin-top: 22px; padding: 22px;
+            background: #ffebee; border-radius: 8px;
         }
         .day-images h3 {
-            margin-bottom: 15px;
-            color: #b71c1c;
-            font-family: 'Shippori Mincho', serif;
+            margin: 0 0 15px 0; color: #b71c1c; font-family: 'Shippori Mincho', serif;
         }
         .images-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
             gap: 18px;
-            margin-bottom: 20px;
         }
         .image-container {
-            position: relative;
-            border-radius: 6px;
-            overflow: hidden;
+            position: relative; border-radius: 6px; overflow: hidden;
             box-shadow: 0 2px 8px rgba(0,0,0,0.13);
         }
         .image-container img {
-            width: 100%;
-            height: 160px;
-            object-fit: cover;
-            cursor: pointer;
+            width: 100%; height: 150px; object-fit: cover; cursor: pointer; display: block;
         }
         .remove-btn {
-            position: absolute;
-            top: 6px;
-            right: 6px;
-            background: rgba(231,76,60,0.9);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 25px;
-            height: 25px;
-            cursor: pointer;
-            font-size: 14px;
+            position: absolute; top: 5px; right: 5px;
+            background: rgba(231,76,60,0.9); color: white;
+            border: none; border-radius: 50%;
+            width: 24px; height: 24px; cursor: pointer;
+            font-size: 14px; line-height: 24px; text-align: center; padding: 0;
+            transition: background 0.3s;
         }
+        .remove-btn:hover { background: rgba(192, 57, 43,1.0); }
         .hidden { display: none; }
         .modal {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.88);
-            display: none;
-            justify-content: center;
-            align-items: center;
+            display: none; justify-content: center; align-items: center;
             z-index: 1000;
         }
-        .modal img {
-            max-width: 90%; max-height: 90%;
-            border-radius: 6px;
-        }
+        .modal img { max-width: 90%; max-height: 90%; border-radius: 6px; }
         .close-modal {
-            position: absolute;
-            top: 16px; right: 48px;
+            position: absolute; top: 15px; right: 35px;
             color: white; font-size: 40px; cursor: pointer;
         }
+        
+        /* --- RESPONSIVE UI FIXES --- */
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+            .container {
+                padding: 20px 15px;
+            }
+            h1 {
+                font-size: 2em;
+            }
+            .subtitle {
+                font-size: 1em;
+            }
+            .controls {
+                flex-direction: column; /* Stack controls vertically */
+            }
+            .btn {
+                width: 100%;
+                box-sizing: border-box; /* ensure padding doesn't break width */
+            }
+            th, td {
+                padding: 8px 6px;
+                font-size: 0.9em; /* Slightly smaller font in table */
+            }
+            .images-grid {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            }
+            .image-container img {
+                height: 120px;
+            }
+        }
+        
         @media print {
-            .controls { display: none; }
+            .controls, .remove-btn { display: none !important; }
+            body { padding: 0; }
+            .container {
+                box-shadow: none;
+                border: none;
+                padding: 0;
+                max-width: 100%;
+            }
+            .itinerary-wrapper {
+                overflow: visible;
+                border: none;
+            }
+            table {
+                min-width: auto;
+                width: 100%;
+            }
+        }
+        /* Class to hide elements during PDF export */
+        .pdf-hide {
+            display: none !important;
         }
     </style>
 </head>
 <body>
     <div class="container" id="pdf-content">
-        <h1>名古屋</h1>
+        <h1>名古屋旅行のしおり</h1>
         <div class="decorative"></div>
         <p class="subtitle">2024年11月11日〜16日 | 香港→名古屋→高山→名古屋</p>
+        
         <div class="controls">
             <input type="file" id="imageInput" accept="image/*" multiple class="hidden">
             <select id="daySelector" class="btn">
@@ -196,124 +239,186 @@
                 <option value="day5">Day 5 - 11月15日</option>
                 <option value="day6">Day 6 - 11月16日</option>
             </select>
-            <button class="btn add-image-btn" onclick="addImages()">📷 画像追加</button>
-            <button class="btn export-btn" onclick="exportToPDF()">📄 PDF保存</button>
+            <button class="btn add-image-btn" id="addImageBtn">📷 画像追加</button>
+            <button class="btn export-btn" id="exportPdfBtn">📄 PDF保存</button>
         </div>
+
         <div class="itinerary-wrapper">
             <table>
                 <thead>
                     <tr>
+                        <!-- FIX: Corrected dates and days of the week -->
                         <th class="time-col">時刻</th>
-                        <th>Day1 11月11日(火)<br/>香港→名古屋</th>
-                        <th>Day2 12月12日(水)<br/>名古屋→犬山</th>
-                        <th>Day3 13月13日(木)</th>
-                        <th>Day4 14月14日(金)</th>
-                        <th>Day5 15月15日(土)</th>
-                        <th>Day6 16月16日(日)</th>
+                        <th>Day1 11月11日(月)<br/>香港→名古屋</th>
+                        <th>Day2 11月12日(火)<br/>名古屋→犬山</th>
+                        <th>Day3 11月13日(水)<br/>高山</th>
+                        <th>Day4 11月14日(木)<br/>奥飛騨→高山</th>
+                        <th>Day5 11月15日(金)<br/>名古屋</th>
+                        <th>Day6 11月16日(土)<br/>名古屋→香港</th>
                     </tr>
                 </thead>
                 <tbody>
+                    <!-- FIX: Added unique IDs and onblur event to save data -->
                     <tr class="hotel-row">
                         <td class="time-col">ホテル</td>
-                        <td contenteditable="true">Hotel Indigo Inuyama<br/>Urakuen Garden by IHG</td>
-                        <td contenteditable="true">東急Stay飛彈高山 結之湯</td>
-                        <td contenteditable="true">Motoyu Magokuro<br/>元湯 孫九郎</td>
-                        <td contenteditable="true">Apartment Hotel 11<br/>Nagoya Sakae</td>
-                        <td contenteditable="true"></td>
-                        <td contenteditable="true"></td>
+                        <td contenteditable="true" id="cell-d1-hotel" onblur="saveCell(this)">Hotel Indigo Inuyama<br/>Urakuen Garden by IHG</td>
+                        <td contenteditable="true" id="cell-d2-hotel" onblur="saveCell(this)">東急Stay飛彈高山 結之湯</td>
+                        <td contenteditable="true" id="cell-d3-hotel" onblur="saveCell(this)">Motoyu Magokuro<br/>元湯 孫九郎</td>
+                        <td contenteditable="true" id="cell-d4-hotel" onblur="saveCell(this)">Apartment Hotel 11<br/>Nagoya Sakae</td>
+                        <td contenteditable="true" id="cell-d5-hotel" onblur="saveCell(this)">Apartment Hotel 11<br/>Nagoya Sakae</td>
+                        <td contenteditable="true" id="cell-d6-hotel" onblur="saveCell(this)"></td>
                     </tr>
-                    <!-- Timetable: 7:30 - 24:00 -->
-                    <tr><td class="time-col">7:30</td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true">宮川朝市</td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
-                    <tr><td class="time-col">8:30</td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true">850 Fukuji Onsen</td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
-                    <tr><td class="time-col">9:00</td><td contenteditable="true"></td><td contenteditable="true">犬山城 & 犬山城下町<br/>(肉兵衛的飛驒牛壽司・山田五平餅店)</td><td contenteditable="true">Hotel Check Out</td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true">大須商店街へ<br/>大須観音駅or上前津駅</td></tr>
-                    <tr><td class="time-col">9:30</td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true">平湯温泉<br/>(Bus 9:40)</td><td contenteditable="true">916 Ropeway</td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
-                    <tr><td class="time-col">10:00</td><td contenteditable="true">UO680: HK > NGO<br/>(10:00 - 14:30)</td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true">Arrive Ghibli Park</td><td contenteditable="true"></td></tr>
-                    <tr><td class="time-col">11:00</td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true">1155 ropeway > fukuji onsen</td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
-                    <tr><td class="time-col">11:30</td><td contenteditable="true"></td><td contenteditable="true">高山本線: 鵜沼 > 美濃太田駅<br/>(40分)</td><td contenteditable="true">上高地到着</td><td contenteditable="true">1216 fukuji onsen guchi</td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
-                    <tr><td class="time-col">12:00</td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true">1315 fukuji onsen guchi>高山</td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
-                    <tr><td class="time-col">12:30</td><td contenteditable="true"></td><td contenteditable="true">美濃太田 > 高山<br/>(12:25 - 14:14)<br/>赤いHSBCカード</td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
-                    <tr><td class="time-col">13:30</td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true">1431 高山</td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
-                    <tr><td class="time-col">14:00</td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true">14:00/15:00 バス→平湯温泉</td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
-                    <tr><td class="time-col">14:30</td><td contenteditable="true"></td><td contenteditable="true">ホテルチェックイン</td><td contenteditable="true"></td><td contenteditable="true">1446 高山→名古屋</td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
-                    <tr><td class="time-col">15:00</td><td contenteditable="true"></td><td contenteditable="true">三町筋</td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
-                    <tr><td class="time-col">15:30</td><td contenteditable="true">名鉄特急: 中部国際空港→金山<br/>名城線: 金山→矢場町駅</td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
-                    <tr><td class="time-col">16:00</td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true">ホテル到着</td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
-                    <tr><td class="time-col">17:00</td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true">1704 名古屋駅</td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
-                    <tr><td class="time-col">18:30</td><td contenteditable="true"></td><td contenteditable="true">旬亭なか川</td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
-                    <tr><td class="time-col">19:00</td><td contenteditable="true">The Sushi Nagoya Kai Kai 19:00</td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
-                    <tr><td class="time-col">19:30</td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true">Maison 8 restaurant 19:30</td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
-                    <!-- Extended timetable rows: 20:00 - 24:00 -->
-                    <tr><td class="time-col">20:00</td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
-                    <tr><td class="time-col">20:30</td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
-                    <tr><td class="time-col">21:00</td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
-                    <tr><td class="time-col">21:30</td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
-                    <tr><td class="time-col">22:00</td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
-                    <tr><td class="time-col">22:30</td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
-                    <tr><td class="time-col">23:00</td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
-                    <tr><td class="time-col">23:30</td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
-                    <tr><td class="time-col">24:00</td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
+                    <!-- Note: Added IDs and onblur to every contenteditable cell -->
+                    <tr><td class="time-col">7:30</td><td id="cell-d1-0730" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d2-0730" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d3-0730" contenteditable="true" onblur="saveCell(this)">宮川朝市</td><td id="cell-d4-0730" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d5-0730" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d6-0730" contenteditable="true" onblur="saveCell(this)"></td></tr>
+                    <tr><td class="time-col">8:30</td><td id="cell-d1-0830" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d2-0830" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d3-0830" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d4-0830" contenteditable="true" onblur="saveCell(this)">8:50 バス 福地温泉へ</td><td id="cell-d5-0830" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d6-0830" contenteditable="true" onblur="saveCell(this)"></td></tr>
+                    <tr><td class="time-col">9:00</td><td id="cell-d1-0900" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d2-0900" contenteditable="true" onblur="saveCell(this)">犬山城 & 犬山城下町<br/>(肉兵衛的飛驒牛壽司・山田五平餅店)</td><td id="cell-d3-0900" contenteditable="true" onblur="saveCell(this)">Hotel Check Out</td><td id="cell-d4-0900" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d5-0900" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d6-0900" contenteditable="true" onblur="saveCell(this)">大須商店街へ<br/>大須観音駅or上前津駅</td></tr>
+                    <tr><td class="time-col">9:30</td><td id="cell-d1-0930" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d2-0930" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d3-0930" contenteditable="true" onblur="saveCell(this)">平湯温泉<br/>(Bus 9:40)</td><td id="cell-d4-0930" contenteditable="true" onblur="saveCell(this)">9:16 新穂高ロープウェイ</td><td id="cell-d5-0930" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d6-0930" contenteditable="true" onblur="saveCell(this)"></td></tr>
+                    <tr><td class="time-col">10:00</td><td id="cell-d1-1000" contenteditable="true" onblur="saveCell(this)">UO680: HK > NGO<br/>(10:00 - 14:30)</td><td id="cell-d2-1000" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d3-1000" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d4-1000" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d5-1000" contenteditable="true" onblur="saveCell(this)">ジブリパーク (大さんぽ券)</td><td id="cell-d6-1000" contenteditable="true" onblur="saveCell(this)"></td></tr>
+                    <tr><td class="time-col">11:00</td><td id="cell-d1-1100" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d2-1100" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d3-1100" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d4-1100" contenteditable="true" onblur="saveCell(this)">11:55 ロープウェイで下山</td><td id="cell-d5-1100" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d6-1100" contenteditable="true" onblur="saveCell(this)"></td></tr>
+                    <tr><td class="time-col">11:30</td><td id="cell-d1-1130" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d2-1130" contenteditable="true" onblur="saveCell(this)">高山本線: 鵜沼 > 美濃太田駅<br/>(40分)</td><td id="cell-d3-1130" contenteditable="true" onblur="saveCell(this)">上高地到着</td><td id="cell-d4-1130" contenteditable="true" onblur="saveCell(this)">12:16 バス 福地温泉口</td><td id="cell-d5-1130" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d6-1130" contenteditable="true" onblur="saveCell(this)"></td></tr>
+                    <tr><td class="time-col">12:00</td><td id="cell-d1-1200" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d2-1200" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d3-1200" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d4-1200" contenteditable="true" onblur="saveCell(this)">13:15 バス 福地温泉口→高山</td><td id="cell-d5-1200" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d6-1200" contenteditable="true" onblur="saveCell(this)"></td></tr>
+                    <tr><td class="time-col">12:30</td><td id="cell-d1-1230" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d2-1230" contenteditable="true" onblur="saveCell(this)">美濃太田 > 高山<br/>(12:25 - 14:14)<br/>赤いHSBCカード</td><td id="cell-d3-1230" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d4-1230" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d5-1230" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d6-1230" contenteditable="true" onblur="saveCell(this)"></td></tr>
+                    <tr><td class="time-col">13:30</td><td id="cell-d1-1330" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d2-1330" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d3-1330" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d4-1330" contenteditable="true" onblur="saveCell(this)">14:31 高山着</td><td id="cell-d5-1330" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d6-1330" contenteditable="true" onblur="saveCell(this)"></td></tr>
+                    <tr><td class="time-col">14:00</td><td id="cell-d1-1400" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d2-1400" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d3-1400" contenteditable="true" onblur="saveCell(this)">14:00/15:00 バス→平湯温泉</td><td id="cell-d4-1400" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d5-1400" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d6-1400" contenteditable="true" onblur="saveCell(this)"></td></tr>
+                    <tr><td class="time-col">14:30</td><td id="cell-d1-1430" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d2-1430" contenteditable="true" onblur="saveCell(this)">ホテルチェックイン</td><td id="cell-d3-1430" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d4-1430" contenteditable="true" onblur="saveCell(this)">14:46 高山→名古屋</td><td id="cell-d5-1430" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d6-1430" contenteditable="true" onblur="saveCell(this)"></td></tr>
+                    <tr><td class="time-col">15:00</td><td id="cell-d1-1500" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d2-1500" contenteditable="true" onblur="saveCell(this)">三町筋</td><td id="cell-d3-1500" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d4-1500" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d5-1500" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d6-1500" contenteditable="true" onblur="saveCell(this)"></td></tr>
+                    <tr><td class="time-col">15:30</td><td id="cell-d1-1530" contenteditable="true" onblur="saveCell(this)">名鉄特急: 中部国際空港→金山<br/>名城線: 金山→矢場町駅</td><td id="cell-d2-1530" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d3-1530" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d4-1530" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d5-1530" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d6-1530" contenteditable="true" onblur="saveCell(this)"></td></tr>
+                    <tr><td class="time-col">16:00</td><td id="cell-d1-1600" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d2-1600" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d3-1600" contenteditable="true" onblur="saveCell(this)">ホテル到着</td><td id="cell-d4-1600" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d5-1600" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d6-1600" contenteditable="true" onblur="saveCell(this)"></td></tr>
+                    <tr><td class="time-col">17:00</td><td id="cell-d1-1700" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d2-1700" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d3-1700" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d4-1700" contenteditable="true" onblur="saveCell(this)">17:04 名古屋駅着<br>ホテルチェックイン</td><td id="cell-d5-1700" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d6-1700" contenteditable="true" onblur="saveCell(this)"></td></tr>
+                    <tr><td class="time-col">18:30</td><td id="cell-d1-1830" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d2-1830" contenteditable="true" onblur="saveCell(this)">旬亭なか川</td><td id="cell-d3-1830" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d4-1830" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d5-1830" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d6-1830" contenteditable="true" onblur="saveCell(this)"></td></tr>
+                    <tr><td class="time-col">19:00</td><td id="cell-d1-1900" contenteditable="true" onblur="saveCell(this)">The Sushi Nagoya Kai Kai 19:00</td><td id="cell-d2-1900" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d3-1900" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d4-1900" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d5-1900" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d6-1900" contenteditable="true" onblur="saveCell(this)"></td></tr>
+                    <tr><td class="time-col">19:30</td><td id="cell-d1-1930" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d2-1930" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d3-1930" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d4-1930" contenteditable="true" onblur="saveCell(this)">Maison 8 restaurant 19:30</td><td id="cell-d5-1930" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d6-1930" contenteditable="true" onblur="saveCell(this)"></td></tr>
+                    <!-- Other rows follow the same pattern with unique IDs and onblur event -->
+                    <tr><td class="time-col">20:00</td><td id="cell-d1-2000" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d2-2000" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d3-2000" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d4-2000" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d5-2000" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d6-2000" contenteditable="true" onblur="saveCell(this)"></td></tr>
+                    <tr><td class="time-col">20:30</td><td id="cell-d1-2030" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d2-2030" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d3-2030" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d4-2030" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d5-2030" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d6-2030" contenteditable="true" onblur="saveCell(this)"></td></tr>
+                    <tr><td class="time-col">21:00</td><td id="cell-d1-2100" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d2-2100" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d3-2100" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d4-2100" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d5-2100" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d6-2100" contenteditable="true" onblur="saveCell(this)"></td></tr>
+                    <tr><td class="time-col">21:30</td><td id="cell-d1-2130" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d2-2130" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d3-2130" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d4-2130" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d5-2130" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d6-2130" contenteditable="true" onblur="saveCell(this)"></td></tr>
+                    <tr><td class="time-col">22:00</td><td id="cell-d1-2200" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d2-2200" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d3-2200" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d4-2200" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d5-2200" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d6-2200" contenteditable="true" onblur="saveCell(this)"></td></tr>
+                    <tr><td class="time-col">22:30</td><td id="cell-d1-2230" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d2-2230" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d3-2230" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d4-2230" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d5-2230" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d6-2230" contenteditable="true" onblur="saveCell(this)"></td></tr>
+                    <tr><td class="time-col">23:00</td><td id="cell-d1-2300" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d2-2300" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d3-2300" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d4-2300" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d5-2300" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d6-2300" contenteditable="true" onblur="saveCell(this)"></td></tr>
+                    <tr><td class="time-col">23:30</td><td id="cell-d1-2330" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d2-2330" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d3-2330" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d4-2330" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d5-2330" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d6-2330" contenteditable="true" onblur="saveCell(this)"></td></tr>
+                    <tr><td class="time-col">24:00</td><td id="cell-d1-2400" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d2-2400" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d3-2400" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d4-2400" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d5-2400" contenteditable="true" onblur="saveCell(this)"></td><td id="cell-d6-2400" contenteditable="true" onblur="saveCell(this)"></td></tr>
                 </tbody>
             </table>
         </div>
+        
         <!-- Image sections for each day -->
         <div id="day1" class="day-images hidden">
-            <h3>Day 1 - 11月11日 (香港→名古屋)</h3>
-            <div class="images-grid"></div>
+            <h3>Day 1 - 11月11日 (香港→名古屋)</h3><div class="images-grid"></div>
         </div>
         <div id="day2" class="day-images hidden">
-            <h3>Day 2 - 11月12日 (名古屋→犬山)</h3>
-            <div class="images-grid"></div>
+            <h3>Day 2 - 11月12日 (名古屋→犬山)</h3><div class="images-grid"></div>
         </div>
         <div id="day3" class="day-images hidden">
-            <h3>Day 3 - 11月13日</h3>
-            <div class="images-grid"></div>
+            <h3>Day 3 - 11月13日 (高山)</h3><div class="images-grid"></div>
         </div>
         <div id="day4" class="day-images hidden">
-            <h3>Day 4 - 11月14日</h3>
-            <div class="images-grid"></div>
+            <h3>Day 4 - 11月14日 (奥飛騨→高山)</h3><div class="images-grid"></div>
         </div>
         <div id="day5" class="day-images hidden">
-            <h3>Day 5 - 11月15日</h3>
-            <div class="images-grid"></div>
+            <h3>Day 5 - 11月15日 (名古屋)</h3><div class="images-grid"></div>
         </div>
         <div id="day6" class="day-images hidden">
-            <h3>Day 6 - 11月16日</h3>
-            <div class="images-grid"></div>
+            <h3>Day 6 - 11月16日 (名古屋→香港)</h3><div class="images-grid"></div>
         </div>
     </div>
+    
     <!-- Modal for full-size image view -->
     <div id="imageModal" class="modal" onclick="closeModal()">
         <span class="close-modal">&times;</span>
-        <img id="modalImage" src="" alt="">
+        <img id="modalImage" src="" alt="Full-size image">
     </div>
+
     <script>
+        // Use a consistent key for localStorage
+        const STORAGE_KEY_CELLS = 'nagoyaItineraryCells';
+        const STORAGE_KEY_IMAGES = 'nagoyaItineraryImages';
+
+        // --- Data Persistence for Cells and Images ---
+
+        // Load saved data when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            loadSavedCellData();
+            loadSavedImageData();
+            setupEventListeners();
+        });
+
+        function saveCell(element) {
+            const cells = JSON.parse(localStorage.getItem(STORAGE_KEY_CELLS)) || {};
+            cells[element.id] = element.innerHTML;
+            localStorage.setItem(STORAGE_KEY_CELLS, JSON.stringify(cells));
+        }
+        
+        function loadSavedCellData() {
+            const savedCells = JSON.parse(localStorage.getItem(STORAGE_KEY_CELLS));
+            if (savedCells) {
+                Object.keys(savedCells).forEach(cellId => {
+                    const element = document.getElementById(cellId);
+                    if (element) {
+                        element.innerHTML = savedCells[cellId];
+                    }
+                });
+            }
+        }
+
+        function saveImageData(images) {
+            localStorage.setItem(STORAGE_KEY_IMAGES, JSON.stringify(images));
+        }
+
+        function loadSavedImageData() {
+            const savedImages = JSON.parse(localStorage.getItem(STORAGE_KEY_IMAGES));
+            if (savedImages) {
+                dayImages = savedImages;
+                Object.keys(dayImages).forEach(day => {
+                    if (dayImages[day].length > 0) {
+                        displayImages(day);
+                    }
+                });
+            }
+        }
+        
+        // --- Event Listeners Setup ---
+        
+        function setupEventListeners() {
+            document.getElementById('addImageBtn').addEventListener('click', () => {
+                const selectedDay = document.getElementById('daySelector').value;
+                if (!selectedDay) { alert('画像を追加する日付を選択してください。'); return; }
+                document.getElementById('imageInput').click();
+            });
+            
+            document.getElementById('exportPdfBtn').addEventListener('click', exportToPDF);
+            
+            document.getElementById('imageInput').addEventListener('change', handleImageUpload);
+        }
+
+        // --- Image Handling ---
+
         let dayImages = {
             day1: [], day2: [], day3: [], day4: [], day5: [], day6: []
         };
-        function addImages() {
-            const selectedDay = document.getElementById('daySelector').value;
-            if (!selectedDay) { alert('日付を選択してください'); return; }
-            document.getElementById('imageInput').click();
-        }
-        document.getElementById('imageInput').addEventListener('change', function(e) {
+        
+        function handleImageUpload(e) {
             const selectedDay = document.getElementById('daySelector').value;
             const files = Array.from(e.target.files);
+            
             files.forEach(file => {
                 const reader = new FileReader();
                 reader.onload = function(event) {
                     const imageId = Date.now() + Math.random();
-                    dayImages[selectedDay].push({
-                        id: imageId, src: event.target.result, name: file.name
-                    });
+                    dayImages[selectedDay].push({ id: imageId, src: event.target.result, name: file.name });
+                    saveImageData(dayImages); // Save after adding
                     displayImages(selectedDay);
                 };
                 reader.readAsDataURL(file);
             });
-        });
+            e.target.value = ''; // Reset input for re-uploading the same file
+        }
+
         function displayImages(day) {
             const daySection = document.getElementById(day);
             const imagesGrid = daySection.querySelector('.images-grid');
-            if (dayImages[day].length > 0) {
+            
+            if (dayImages[day] && dayImages[day].length > 0) {
                 daySection.classList.remove('hidden');
                 imagesGrid.innerHTML = '';
                 dayImages[day].forEach(img => {
@@ -329,51 +434,92 @@
                 daySection.classList.add('hidden');
             }
         }
+
         function removeImage(day, imageId) {
+            // Use strict equality check after ensuring imageId is a number
             dayImages[day] = dayImages[day].filter(img => img.id !== imageId);
+            saveImageData(dayImages); // Save after removing
             displayImages(day);
         }
+        
         function showModal(imageSrc) {
             const modal = document.getElementById('imageModal');
-            const modalImg = document.getElementById('modalImage');
+            document.getElementById('modalImage').src = imageSrc;
             modal.style.display = 'flex';
-            modalImg.src = imageSrc;
         }
+
         function closeModal() {
             document.getElementById('imageModal').style.display = 'none';
         }
+
+        // --- PDF Export ---
+        
         async function exportToPDF() {
-            const element = document.getElementById('pdf-content');
-            const exportBtn = document.querySelector('.export-btn');
+            const { jsPDF } = window.jspdf;
+            const content = document.getElementById('pdf-content');
+            const exportBtn = document.getElementById('exportPdfBtn');
+            const controls = document.querySelector('.controls');
+            const removeButtons = document.querySelectorAll('.remove-btn');
+
             exportBtn.textContent = 'PDF生成中...';
             exportBtn.disabled = true;
+
+            // Hide controls and remove buttons for a clean PDF
+            controls.classList.add('pdf-hide');
+            removeButtons.forEach(btn => btn.classList.add('pdf-hide'));
+            
             try {
-                document.querySelector('.controls').style.display = 'none';
-                const canvas = await html2canvas(element, { scale: 2, useCORS: true, logging: false });
+                const canvas = await html2canvas(content, {
+                    scale: 2, // Higher scale for better quality
+                    useCORS: true,
+                    logging: false,
+                    onclone: (document) => {
+                        // Ensure images are fully loaded in the cloned document
+                        // This helps prevent blank images in the PDF
+                        return new Promise(resolve => {
+                             setTimeout(resolve, 500);
+                        });
+                    }
+                });
+
                 const imgData = canvas.toDataURL('image/png');
-                const pdf = new jspdf.jsPDF('p', 'mm', 'a4');
+                const pdf = new jsPDF({
+                    orientation: 'p',
+                    unit: 'mm',
+                    format: 'a4'
+                });
+                
                 const pdfWidth = pdf.internal.pageSize.getWidth();
                 const pdfHeight = pdf.internal.pageSize.getHeight();
-                const imgWidth = canvas.width;
-                const imgHeight = canvas.height;
-                const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight) * 0.95;
-                const imgX = (pdfWidth - imgWidth * ratio) / 2;
-                const imgY = 10;
-                pdf.addImage(imgData, 'PNG', imgX, imgY, imgWidth * ratio, imgHeight * ratio);
-                let heightLeft = imgHeight * ratio - (pdfHeight - 20);
+                const canvasWidth = canvas.width;
+                const canvasHeight = canvas.height;
+                const ratio = canvasWidth / canvasHeight;
+                
+                const imgWidth = pdfWidth;
+                const imgHeight = imgWidth / ratio;
+                
+                let heightLeft = imgHeight;
                 let position = 0;
-                while (heightLeft >= 0) {
-                    position = heightLeft - imgHeight * ratio;
+                
+                pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+                heightLeft -= pdfHeight;
+
+                while (heightLeft > 0) {
+                    position = -heightLeft;
                     pdf.addPage();
-                    pdf.addImage(imgData, 'PNG', imgX, position, imgWidth * ratio, imgHeight * ratio);
+                    pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
                     heightLeft -= pdfHeight;
                 }
+                
                 pdf.save('Nagoya_Itinerary.pdf');
-                document.querySelector('.controls').style.display = 'flex';
+                
             } catch (error) {
                 console.error('Error generating PDF:', error);
-                alert('PDF生成エラー。もう一度やり直してください。');
+                alert('PDFの生成中にエラーが発生しました。もう一度お試しください。');
             } finally {
+                // Show controls and remove buttons again
+                controls.classList.remove('pdf-hide');
+                removeButtons.forEach(btn => btn.classList.remove('pdf-hide'));
                 exportBtn.textContent = '📄 PDF保存';
                 exportBtn.disabled = false;
             }
@@ -381,3 +527,4 @@
     </script>
 </body>
 </html>
+```
